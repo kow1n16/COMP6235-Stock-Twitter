@@ -6,7 +6,7 @@
     width    = 764 - margin.left - margin.right,
     height   = 283 - margin.top - margin.bottom,
     height2  = 283 - margin2.top - margin2.bottom;
-
+// comment
   var parseDate = d3.time.format('%d/%m/%Y').parse,
     bisectDate = d3.bisector(function(d) { return (new Date(d.date*1000)); }).left,
     legendFormat = d3.time.format('%b %d, %Y');
