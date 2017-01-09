@@ -43,6 +43,18 @@
     .attr('width', width + margin.left + margin.right)
     .attr('height', height + margin.top + margin.bottom + 60);
 
+  var svg1 = d3.select('body').append('p');
+    // .attr('class', 'chart1')
+    // .attr('width', width + margin.left + margin.right)
+    // .attr('height', height + margin.top + margin.bottom + 60);
+
+  // svg1.append('defs').append('clipPath')
+  //   .attr('id', 'clip')
+  // .append('rect')
+  //   .attr('width', width)
+  //   .attr('height', height);
+  // svg1.append('circle').attr('cy', 25).attr('r', 25);
+
   svg.append('defs').append('clipPath')
     .attr('id', 'clip')
   .append('rect')
