@@ -59,6 +59,11 @@
     .attr('width', width)
     .attr('height', height);
 
+  var cwidth = 400;       //svg1 width
+  var cheight = 400;
+  var svg1 = d3.select('body').append('svg')
+      .attr("width", cwidth).attr("height", cheight);
+
   var make_y_axis = function () {
     return d3.svg.axis()
       .scale(y)
@@ -106,7 +111,10 @@
     .append('g')
     .attr('class', 'chart__range-selection')
     .attr('transform', 'translate(110, 0)');
-
+  var changedata = [0,0,0];
+  var padding = {top: 20, right: 20, bottom: 20, left: 50};
+  var xcAxisWidth = 300; // xaxis's width
+  var ycAxisWidth = 300; // yaxis's width
   // read data from file.
    d3.json('http://svm-js1n16-comp6235-temp.ecs.soton.ac.uk:27017/result/sbux_collection', function(err, data){
     // d3.csv('./data/sbux.csv',function(err, data){
@@ -160,6 +168,103 @@
         .text(legendFormat(new Date(xRange[0])) + ' - ' + legendFormat(new Date(xRange[1])))
         .style('text-anchor', 'end')
         .attr('transform', 'translate(' + width + ', 0)');
+
+      var pricechange = new Array();
+      for(var i = 0; i < data.length; i ++)
+        {
+          pricechange[i] = data[i].price - data[i].open; 
+          // k = k+1;     
+          // if (data[i].date == timeend)
+          //   break;
+        };
+      for(var i =0; i < pricechange.length; i ++)
+      {
+        if (pricechange[i]>0)
+          changedata[0] = changedata[0]+1;
+        if (pricechange[i]==0)
+          changedata[1] = changedata[1]+1;
+        if (pricechange[i]<0)
+          changedata[2] = changedata[2]+1;
+      };
+      changedata[0] = changedata[0]/pricechange.length;
+      changedata[0] = changedata[0].toFixed(2);
+      changedata[1] = changedata[1]/pricechange.length;
+      changedata[1] = changedata[1].toFixed(2);
+      changedata[2] = changedata[2]/pricechange.length;
+      changedata[2] = changedata[2].toFixed(2);
+
+      var barchart = svg1.append("g");
+      var tag1 = new Array();
+      tag1 = ['Increased','Unchanged','Decreased'];
+      var xctagScale = d3.scale.ordinal()
+          .domain(tag1.map(function(d){return d;}))
+          .rangeRoundBands([0, xcAxisWidth], 0.6);
+        //xaxis plotting scale of change chart
+      var xcScale = d3.scale.ordinal()
+          .domain(d3.range(changedata.length))
+          .rangeRoundBands([0, xcAxisWidth], 0.6);
+
+        //yaxis plotting scale of change chart
+      var ycScale = d3.scale.linear()
+          .domain([0,1])
+          .range([0, ycAxisWidth]);
+
+        /* rect of change chart */
+      barchart.selectAll("rect")
+            .data(changedata)
+            .enter()
+            .append("rect")
+            .call(crectFun);
+        /* text of change chart*/
+      barchart.selectAll("text")
+            .data(changedata)
+            .enter()
+            .append("text")
+            .call(ctextFun);
+
+        /* Adding axes */
+      var xcAxis = d3.svg.axis().scale(xctagScale).orient("bottom");
+      ycScale.range([ycAxisWidth, 0]);  
+      var ycAxis = d3.svg.axis().scale(ycScale).orient("left").tickFormat(d3.format(".0%"));
+
+      barchart.append("g").attr("class", "axis")
+          .attr("transform", "translate("+ padding.left +","+ (cheight - padding.bottom) +")")
+          .call(xcAxis);
+
+      barchart.append("g").attr("class", "axis")
+          .attr("transform", "translate("+ padding.left +","+ (cheight - padding.bottom - ycAxisWidth) +")")
+          .call(ycAxis);
+      /* rect Function */
+      function crectFun(selection) {
+      selection.attr("fill", "steelblue")
+            .attr("x", function(d, i){
+                return padding.left + xcScale(i);
+            })
+            .attr("y", function(d){
+                return cheight - padding.bottom - ycScale(d);
+            })
+            .attr("width", xcScale.rangeBand())
+            .attr("height", function(d){
+                return ycScale(d);
+            });
+      }
+      /* text Function */
+      function ctextFun(selection){
+      selection.attr("fill", "white")
+            .attr("font-size", "14px").attr("text-anchor", "middle")
+            .attr("x", function(d, i){
+                return padding.left + xcScale(i);
+            })
+            .attr("y", function(d){
+                return cheight - padding.bottom - ycScale(d);
+            })
+            .attr("dx", xcScale.rangeBand()/2).attr("dy", "1em")
+            .text(function(d){
+                var strData = parseFloat(d)*100;
+                var ret = strData.toString()+"%";
+                return ret;
+            });
+      }
 
       // appending yAxis to the first chart.
       var scoreChart = focus.append('path')
@@ -326,6 +431,41 @@
           // var days = Math.ceil((ext[1] - ext[0]) / (24 * 3600 * 1000))
           // focusGraph.attr('width', (40 > days) ? (40 - days) * 5 / 6 : 5)
         }
+        time = x.domain();
+        timestart = new Date(time[0]).getTime();
+        timestart = timestart/1000;
+        timeend = new Date(time[1]).getTime();
+        timeend = timeend/1000;
+        for(var i = 0; i < data.length; i ++)
+        {
+          if (data[i].date >= timestart)
+            break;
+        };
+        var k = 0;
+        var pricechange = new Array();
+        for(var i = i; i < data.length; i ++)
+        {
+          if (data[i].date > timeend)
+            break;
+          pricechange[k] = data[i].price - data[i].open; 
+          k = k+1;     
+        };
+        var changedata = [0,0,0];
+        for(var i =0; i < pricechange.length; i ++)
+        {
+          if (pricechange[i]>0)
+            changedata[0] = changedata[0]+1;
+          if (pricechange[i]==0)
+            changedata[1] = changedata[1]+1;
+          if (pricechange[i]<0)
+            changedata[2] = changedata[2]+1;
+        };
+        changedata[0] = changedata[0]/pricechange.length;
+        changedata[0] = changedata[0].toFixed(2);
+        changedata[1] = changedata[1]/pricechange.length;
+        changedata[1] = changedata[1].toFixed(2);
+        changedata[2] = changedata[2]/pricechange.length;
+        changedata[2] = changedata[2].toFixed(2);
 
         priceChart.attr('d', priceLine);
 
@@ -337,6 +477,32 @@
         focus.select('.y.axis').call(yAxis);
 
         focus.select('.yt.axis').call(ytAxis);
+        //yaxis plotting scale of change chart
+        var ycScale = d3.scale.linear()
+            .domain([0,1])
+            .range([0,ycAxisWidth]);
+        /* rect of change chart */
+        barchart.selectAll("rect")
+            .data(changedata)
+            .transition()
+            .attr("y", function(d){
+                return cheight - padding.bottom - ycScale(d);
+            })
+            .attr("width", xcScale.rangeBand())
+            .attr("height", function(d){
+                return ycScale(d);
+            });
+        /* text of change chart*/
+        barchart.selectAll("text")
+            .data(changedata)
+            .attr("y", function(d){
+                return cheight - padding.bottom - ycScale(d);
+            })
+            .attr("dx", xcScale.rangeBand()/2).attr("dy", "1em")
+            .text(function(d){
+                var c=d.slice(2,4)+"%"; 
+                return c;
+            });    
       }
 
       var dateRange = ['1d', '1w', '1m', '3m', '6m', '1y', '5y']
