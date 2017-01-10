@@ -34,8 +34,8 @@
 
   var scoreLine = d3.svg.line()
     .interpolate('linear')
-    .x(function(d) { return xt(new Date(d.date*1000)); })
-    .y(function(d) { return yt(d.price); });
+    .x(function(d) { return x(new Date(d.date*1000)); })
+    .y(function(d) { return yt(d.score); });
 
   // var avgLine = d3.svg.line()
   //   .interpolate('linear')
@@ -108,8 +108,8 @@
     .attr('transform', 'translate(110, 0)');
 
   // read data from file.
-   d3.json('http://svm-js1n16-comp6235-temp.ecs.soton.ac.uk:27017/all/sbux_collection', function(err, datat){
-    d3.csv('./data/sbux.csv',function(err, data){
+   d3.json('http://svm-js1n16-comp6235-temp.ecs.soton.ac.uk:27017/result/sbux_collection', function(err, data){
+    // d3.csv('./data/sbux.csv',function(err, data){
       // var x = d3.time.scale().range([0, width]),
       // x2  = d3.time.scale().range([0, width]),
       // y   = d3.scale.linear().range([height, 0]),
@@ -120,11 +120,6 @@
       var brush = d3.svg.brush()
         .x(x2)
         .on('brush', brushed);
-
-      for(var i =0; i < datat.length; i ++)
-      {
-        datat[i].date = parseInt(datat[i].date);
-      };
 
       for(var i =0; i < data.length; i ++)
       {
@@ -148,7 +143,7 @@
       y.domain([d3.extent(data.map(function(d) { return d.price; }))[0] - 1, d3.extent(data.map(function(d) { return d.price; }))[1]]);
       y3.domain(d3.extent(data.map(function(d) { return d.price; })));
 
-      yt.domain([d3.extent(datat.map(function(d) { return d.price; }))[0], d3.extent(datat.map(function(d) { return d.price; }))[1]]);
+      yt.domain([d3.extent(data.map(function(d) { return d.score; }))[0], d3.extent(data.map(function(d) { return d.score; }))[1]]);
       // console.log("after y3");
       x2.domain(x.domain());
       y2.domain(y.domain());
@@ -156,8 +151,8 @@
       var min = d3.min(data.map(function(d) { return d.price; }));
       var max = d3.max(data.map(function(d) { return d.price; }));
 
-      var mint = d3.min(datat.map(function(d) { return d.price; }));
-      var maxt = d3.max(datat.map(function(d) { return d.price; }));
+      var mint = d3.min(data.map(function(d) { return d.score; }));
+      var maxt = d3.max(data.map(function(d) { return d.score; }));
       // console.log(min1);
       // console.log(max1);
 
@@ -168,7 +163,7 @@
 
       // appending yAxis to the first chart.
       var scoreChart = focus.append('path')
-          .datum(datat)
+          .datum(data)
           .attr('class', 'chart__line chart__average--focus line')
           .attr('d', scoreLine);
           
@@ -202,10 +197,10 @@
           .attr('class', 'y axis')
           .attr('transform', 'translate(0, 0)')
           .call(yAxis);
-      var width1 = width - 6;
+      var width1 = width - 7;
       focus.append('g')
           .attr('class', 'yt axis')
-          .attr('transform', 'translate(12, 0)')
+          .attr('transform', 'translate(' + width1 + ', 0)')
           .call(ytAxis);
 
       var focusGraph = barsGroup.selectAll('rect')
@@ -285,21 +280,21 @@
         // need to 
         var x0 = x.invert(d3.mouse(this)[0]);
         var i = bisectDate(data, x0, 1);
-        var it = bisectDate(datat, x0, 1);
+        // var it = bisectDate(datat, x0, 1);
         console.log("coming to mousemove");
         var d0 = data[i - 1];
         var d1 = data[i];
 
-        var d0t = datat[it - 1];
-        var d1t = datat[it];
+        // var d0t = datat[it - 1];
+        // var d1t = datat[it];
 
         // console.log("i:", i, "d0:", d0, "d1:", d1);
         var d = x0 - d0.date > d1.date - x0 ? d1 : d0;
-        var dt = x0 - d0.date > d1.date - x0 ? d1t : d0t;
-        helperText.text(legendFormat(new Date(d.date*1000)) + ' - Price: ' + d.price + ' Score: ' + dt.price);
+        // var dt = x0 - d0.date > d1.date - x0 ? d1t : d0t;
+        helperText.text(legendFormat(new Date(d.date*1000)) + ' - Price: ' + d.price + ' Score: ' + d.score);
         priceTooltip.attr('transform', 'translate(' + x(new Date(d.date*1000)) + ',' + y(d.price) + ')');
 
-        scoreTooltip.attr('transform', 'translate(' + x(new Date(dt.date*1000)) + ',' + yt(dt.price) + ')');
+        scoreTooltip.attr('transform', 'translate(' + x(new Date(d.date*1000)) + ',' + yt(d.score) + ')');
         // averageTooltip.attr('transform', 'translate(' + x(new Date(d.date*1000)) + ',' + y(d.average) + ')');
       }
 
@@ -319,8 +314,8 @@
           ]);
 
           yt.domain([
-            d3.min(datat.map(function(d) { return ((new Date(d.date*1000)) >= ext[0] && (new Date(d.date*1000)) <= ext[1]) ? d.price : maxt; })),
-            d3.max(datat.map(function(d) { return ((new Date(d.date*1000)) >= ext[0] && (new Date(d.date*1000)) <= ext[1]) ? d.price : mint; }))
+            d3.min(data.map(function(d) { return ((new Date(d.date*1000)) >= ext[0] && (new Date(d.date*1000)) <= ext[1]) ? d.score : maxt; })),
+            d3.max(data.map(function(d) { return ((new Date(d.date*1000)) >= ext[0] && (new Date(d.date*1000)) <= ext[1]) ? d.score : mint; }))
           ]);
 
           // console.log("min1:", min1, "max1:", max1);
@@ -384,6 +379,6 @@
         brushed()
         context.select('g.x.brush').call(brush.extent([ext, today]))
       }
-    })
+    // })
   })// end Data
 }());

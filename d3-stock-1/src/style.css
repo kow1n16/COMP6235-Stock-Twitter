@@ -40,8 +40,8 @@ svg {
 }
 .chart__average--focus {
   stroke-width: 2px;
-  stroke: #f00;
-  opacity: 0.3;
+  stroke: #2980b9;
+  /*opacity: 0.3;*/
 }
 .chart__overlay {
   opacity: 0;
@@ -55,6 +55,11 @@ svg {
   fill: none;
   stroke: #f00;
 }
+.chart__tooltip--score {
+  fill: none;
+  stroke: #f00;
+}
+
 .chart__bars {
   fill: #99c5df;
   opacity: 1;
