@@ -1,6 +1,7 @@
 /* global d3, _ */
 
 (function() {
+
   var margin = {top: 30, right: 20, bottom: 100, left: 50},
     margin2  = {top: 210, right: 20, bottom: 20, left: 50},
     width    = 764 - margin.left - margin.right,
@@ -12,20 +13,29 @@
     legendFormat = d3.time.format('%b %d, %Y');
 
   var x = d3.time.scale().range([0, width]),
+    xt = d3.time.scale().range([0, width]),
     x2  = d3.time.scale().range([0, width]),
     y   = d3.scale.linear().range([height, 0]),
+    yt  = d3.scale.linear().range([height, 0]),
     y1  = d3.scale.linear().range([height, 0]),
     y2  = d3.scale.linear().range([height2, 0]),
     y3  = d3.scale.linear().range([60, 0]);
 
   var xAxis = d3.svg.axis().scale(x).orient('bottom'),
+    xAxist = d3.svg.axis().scale(xt).orient('bottom'),
     xAxis2  = d3.svg.axis().scale(x2).orient('bottom'),
     yAxis   = d3.svg.axis().scale(y).orient('left');
+    ytAxis = d3.svg.axis().scale(yt).orient('right');
 
   var priceLine = d3.svg.line()
     .interpolate('linear')
     .x(function(d) { return x(new Date(d.date*1000)); })
     .y(function(d) { return y(d.price); });
+
+  var scoreLine = d3.svg.line()
+    .interpolate('linear')
+    .x(function(d) { return xt(new Date(d.date*1000)); })
+    .y(function(d) { return yt(d.price); });
 
   // var avgLine = d3.svg.line()
   //   .interpolate('linear')
@@ -43,7 +53,7 @@
     .attr('width', width + margin.left + margin.right)
     .attr('height', height + margin.top + margin.bottom + 60);
 
-  var svg1 = d3.select('body').append('p');
+  // var svg1 = d3.select('body').append('p');
     // .attr('class', 'chart1')
     // .attr('width', width + margin.left + margin.right)
     // .attr('height', height + margin.top + margin.bottom + 60);
@@ -67,6 +77,14 @@
       .orient('left')
       .ticks(3);
   };
+
+  var make_yt_axis = function () {
+    return d3.svg.axis()
+      .scale(yt)
+      .orient('right')
+      .ticks(3);
+  };
+
   // The first chart
   var focus = svg.append('g')
     .attr('class', 'focus')
@@ -100,484 +118,279 @@
     .append('g')
     .attr('class', 'chart__range-selection')
     .attr('transform', 'translate(110, 0)');
-    // *********************************************************************************************************
-  d3.json('http://svm-js1n16-comp6235-temp.ecs.soton.ac.uk:27017/all/sbux_collection', function(wrr, data){
-    
-    var brush = d3.svg.brush()
-      .x(x2)
-      .on('brush', brushed);
 
-    for(var i =0; i < data.length; i ++)
-    {
-      data[i].date = parseInt(data[i].date);
-    };
-
-    // console.log("after brush");
-    // min and max value.
-    // console.log(d.Date);
-    // (new Date(d.date*1000))
-    var xRange = d3.extent(data.map(function(d) {  return new Date(d.date*1000); }));
-    console.log("xRange is:", xRange);
-    x.domain(xRange);
-    // console.log("x.domain");
-    console.log(d3.extent(data.map(function(d) { return d.price; }))[0]);
-    y.domain([d3.extent(data.map(function(d) { return d.price; }))[0] - 1, d3.extent(data.map(function(d) { return d.price; }))[1]]);
-    y3.domain(d3.extent(data.map(function(d) { return d.price; })));
-    // console.log("after y3");
-    x2.domain(x.domain());
-    y2.domain(y.domain());
-
-    var min = d3.min(data.map(function(d) { return d.price; }));
-    var max = d3.max(data.map(function(d) { return d.price; }));
-    // console.log(min1);
-    // console.log(max1);
-
-    var range = legend.append('text')
-      .text(legendFormat(new Date(xRange[0])) + ' - ' + legendFormat(new Date(xRange[1])))
-      .style('text-anchor', 'end')
-      .attr('transform', 'translate(' + width + ', 0)');
-
-    // appending yAxis to the first chart.
-    focus.append('g')
-        .attr('class', 'y chart__grid')
-        .call(make_y_axis()
-        .tickSize(-width, 0, 0)
-        .tickFormat(''));
-
-    // var avgLine = d3.svg.line()
-    // .interpolate('monotone')
-    // .x(function(d) { return x(d.date); })
-    // .y(function(d) { return y(d.average); });
-
-    // var averageChart = focus.append('path')
-    //     .datum(data)
-    //     .attr('class', 'chart__line chart__average--focus line');
-        // .attr('d', avgLine);
-
-    // var priceLine = d3.svg.line()
-    // .interpolate('monotone')
-    // .x(function(d) { return x(d.date); })
-    // .y(function(d) { return y(d.price); });
-
-    var priceChart = focus.append('path')
-        .datum(data)
-        .attr('class', 'chart__line chart__price--focus line')
-        .attr('d', priceLine);
-
-    // var xAxis = d3.svg.axis().scale(x).orient('bottom'),
-    // xAxis2  = d3.svg.axis().scale(x2).orient('bottom'),
-    // yAxis   = d3.svg.axis().scale(y).orient('left');
-
-    focus.append('g')
-        .attr('class', 'x axis')
-        .attr('transform', 'translate(0 ,' + height + ')')
-        .call(xAxis);
-
-    focus.append('g')
-        .attr('class', 'y axis')
-        .attr('transform', 'translate(12, 0)')
-        .call(yAxis);
-
-    var focusGraph = barsGroup.selectAll('rect')
-        .data(data)
-      .enter().append('rect')
-        .attr('class', 'chart__bars')
-        .attr('x', function(d, i) { return x(new Date(d.date*1000)); })
-        .attr('y', function(d) { return 155 - y3(d.price); })
-        .attr('width', 1)
-        .attr('height', function(d) { return y3(d.price); });
-
-    var helper = focus.append('g')
-      .attr('class', 'chart__helper')
-      .style('text-anchor', 'end')
-      .attr('transform', 'translate(' + width + ', 0)');
-
-    var helperText = helper.append('text')
-
-    var priceTooltip = focus.append('g')
-      .attr('class', 'chart__tooltip--price')
-      .append('circle')
-      .style('display', 'none')
-      .attr('r', 2.5);
-
-    var averageTooltip = focus.append('g')
-      .attr('class', 'chart__tooltip--average')
-      .append('circle')
-      .style('display', 'none')
-      .attr('r', 2.5);
-
-    var mouseArea = svg.append('g')
-      .attr('class', 'chart__mouse')
-      .append('rect')
-      .attr('class', 'chart__overlay')
-      .attr('width', width)
-      .attr('height', height)
-      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-      .on('mouseover', function() {
-        helper.style('display', null);
-        priceTooltip.style('display', null);
-        averageTooltip.style('display', null);
-      })
-      .on('mouseout', function() {
-        helper.style('display', 'none');
-        priceTooltip.style('display', 'none');
-        averageTooltip.style('display', 'none');
-      })
-      .on('mousemove', mousemove);
-
-    context.append('path')
-        .datum(data)
-        .attr('class', 'chart__area area')
-        .attr('d', area2);
-
-    context.append('g')
-        .attr('class', 'x axis chart__axis--context')
-        .attr('y', 0)
-        .attr('transform', 'translate(0,' + (height2 - 22) + ')')
-        .call(xAxis2);
-
-    context.append('g')
-        .attr('class', 'x brush')
-        .call(brush)
-      .selectAll('rect')
-        .attr('y', -6)
-        .attr('height', height2 + 7);
-
-    function mousemove() {
-      var x0 = x.invert(d3.mouse(this)[0]);
-      var i = bisectDate(data, x0, 1);
-      console.log("coming to mousemove");
-      var d0 = data[i - 1];
-      var d1 = data[i];
-      // console.log("i:", i, "d0:", d0, "d1:", d1);
-      var d = x0 - d0.date > d1.date - x0 ? d1 : d0;
-      helperText.text(legendFormat(new Date(d.date*1000)) + ' - Price: ' + d.price + ' Avg: ' + d.average);
-      priceTooltip.attr('transform', 'translate(' + x(new Date(d.date*1000)) + ',' + y(d.price) + ')');
-      // averageTooltip.attr('transform', 'translate(' + x(new Date(d.date*1000)) + ',' + y(d.average) + ')');
-    }
-
-    function brushed() {
-      var ext = brush.extent();
-      console.log("inside brushed:", ext[0]);
-      // console.log("d.date:", (new Date(d.date*1000)), "ext[0]", ext[0] );
-      console.log(max);
-      if (!brush.empty()) {
-        console.log("x.domain", brush.empty() ? x2.domain() : brush.extent());
-        x.domain(brush.empty() ? x2.domain() : brush.extent());
-        // x.domain(brush.empty() ? x2.domain() : brush.extent());
-        console.log("x.domain", brush.empty() ? x2.domain() : brush.extent());
-        y.domain([
-          d3.min(data.map(function(d) { return ((new Date(d.date*1000)) >= ext[0] && (new Date(d.date*1000)) <= ext[1]) ? d.price : max; })) - 0.1,
-          d3.max(data.map(function(d) { return ((new Date(d.date*1000)) >= ext[0] && (new Date(d.date*1000)) <= ext[1]) ? d.price : min; }))
-        ]);
-        // console.log("min1:", min1, "max1:", max1);
-
-        range.text(legendFormat(ext[0]) + ' - ' + legendFormat(ext[1]));
-        focusGraph.attr('x', function(d, i) { return x(new Date(d.date*1000)); });
-
-        // var days = Math.ceil((ext[1] - ext[0]) / (24 * 3600 * 1000))
-        // focusGraph.attr('width', (40 > days) ? (40 - days) * 5 / 6 : 5)
-      }
-
-      priceChart.attr('d', priceLine);
-
-      console.log("after*******");
-      // averageChart.attr('d', avgLine);
-      focus.select('.x.axis').call(xAxis);
-      focus.select('.y.axis').call(yAxis);
-    }
-
-    var dateRange = ['1d', '1w', '1m', '3m', '6m', '1y', '5y']
-    for (var i = 0, l = dateRange.length; i < l; i ++) {
-      var v = dateRange[i];
-      rangeSelection
-        .append('text')
-        .attr('class', 'chart__range-selection')
-        .text(v)
-        .attr('transform', 'translate(' + (20 * i) + ', 0)')
-        .on('click', function(d) { focusOnRange(this.textContent); });
-    }
-
-    function focusOnRange(range) {
-      var today = new Date(data[data.length - 1].date*1000)
-      var ext = new Date(data[data.length - 1].date*1000)
-      console.log("today:", today, "ext:", ext);
-      if (range === '1d')
-        ext.setDate(ext.getDate() - 1)
-
-      if (range === '1m')
-        ext.setMonth(ext.getMonth() - 1)
-
-      if (range === '1w')
-        ext.setDate(ext.getDate() - 7)
-
-      if (range === '3m')
-        ext.setMonth(ext.getMonth() - 3)
-
-      if (range === '6m')
-        ext.setMonth(ext.getMonth() - 6)
-
-      if (range === '1y')
-        ext.setFullYear(ext.getFullYear() - 1)
-
-      if (range === '5y')
-        ext.setFullYear(ext.getFullYear() - 5)
-
-      brush.extent([ext, today])
-      brushed()
-      context.select('g.x.brush').call(brush.extent([ext, today]))
-    }
-
-  })
   // read data from file.
   d3.csv('./data/sbux.csv',function(err, data) {
-    
-    // var x = d3.time.scale().range([0, width]),
-    // x2  = d3.time.scale().range([0, width]),
-    // y   = d3.scale.linear().range([height, 0]),
-    // y1  = d3.scale.linear().range([height, 0]),
-    // y2  = d3.scale.linear().range([height2, 0]),
-    // y3  = d3.scale.linear().range([60, 0]);
-    // console.log(data[0]);
-    var brush = d3.svg.brush()
-      .x(x2)
-      .on('brush', brushed);
+    d3.json('http://svm-js1n16-comp6235-temp.ecs.soton.ac.uk:27017/all/sbux_collection', function(err, datat){
+      // var x = d3.time.scale().range([0, width]),
+      // x2  = d3.time.scale().range([0, width]),
+      // y   = d3.scale.linear().range([height, 0]),
+      // y1  = d3.scale.linear().range([height, 0]),
+      // y2  = d3.scale.linear().range([height2, 0]),
+      // y3  = d3.scale.linear().range([60, 0]);
+      // console.log(data[0]);
+      var brush = d3.svg.brush()
+        .x(x2)
+        .on('brush', brushed);
 
-    for(var i =0; i < data.length; i ++)
-    {
-      data[i].date = parseInt(data[i].date);
-    };
+      for(var i =0; i < data.length; i ++)
+      {
+        data[i].date = parseInt(data[i].date);
+      };
 
-    // console.log("after brush");
-    // min and max value.
-    // console.log(d.Date);
-    // (new Date(d.date*1000))
-    var xRange = d3.extent(data.map(function(d) {  return new Date(d.date*1000); }));
-    console.log("xRange is:", xRange);
-    x.domain(xRange);
-    // console.log("x.domain");
-    console.log(d3.extent(data.map(function(d) { return d.price; }))[0]);
-    y.domain([d3.extent(data.map(function(d) { return d.price; }))[0] - 1, d3.extent(data.map(function(d) { return d.price; }))[1]]);
-    y3.domain(d3.extent(data.map(function(d) { return d.price; })));
-    // console.log("after y3");
-    x2.domain(x.domain());
-    y2.domain(y.domain());
+      // console.log("after brush");
+      // min and max value.
+      // console.log(d.Date);
+      // (new Date(d.date*1000))
+      var xRange = d3.extent(data.map(function(d) {  return new Date(d.date*1000); }));
+      console.log("xRange is:", xRange);
+      x.domain(xRange);
+      // console.log("x.domain");
+      console.log(d3.extent(data.map(function(d) { return d.price; }))[0]);
+      y.domain([d3.extent(data.map(function(d) { return d.price; }))[0] - 1, d3.extent(data.map(function(d) { return d.price; }))[1]]);
+      y3.domain(d3.extent(data.map(function(d) { return d.price; })));
 
-    var min = d3.min(data.map(function(d) { return d.price; }));
-    var max = d3.max(data.map(function(d) { return d.price; }));
-    // console.log(min1);
-    // console.log(max1);
+      yt.domain([d3.extent(datat.map(function(d) { return d.price; }))[0], d3.extent(datat.map(function(d) { return d.price; }))[1]]);
+      // console.log("after y3");
+      x2.domain(x.domain());
+      y2.domain(y.domain());
 
-    var range = legend.append('text')
-      .text(legendFormat(new Date(xRange[0])) + ' - ' + legendFormat(new Date(xRange[1])))
-      .style('text-anchor', 'end')
-      .attr('transform', 'translate(' + width + ', 0)');
+      var min = d3.min(data.map(function(d) { return d.price; }));
+      var max = d3.max(data.map(function(d) { return d.price; }));
 
-    // appending yAxis to the first chart.
-    focus.append('g')
-        .attr('class', 'y chart__grid')
-        .call(make_y_axis()
-        .tickSize(-width, 0, 0)
-        .tickFormat(''));
+      var mint = d3.min(datat.map(function(d) { return d.price; }));
+      var maxt = d3.max(datat.map(function(d) { return d.price; }));
+      // console.log(min1);
+      // console.log(max1);
 
-    // var avgLine = d3.svg.line()
-    // .interpolate('monotone')
-    // .x(function(d) { return x(d.date); })
-    // .y(function(d) { return y(d.average); });
+      var range = legend.append('text')
+        .text(legendFormat(new Date(xRange[0])) + ' - ' + legendFormat(new Date(xRange[1])))
+        .style('text-anchor', 'end')
+        .attr('transform', 'translate(' + width + ', 0)');
 
-    // var averageChart = focus.append('path')
-    //     .datum(data)
-    //     .attr('class', 'chart__line chart__average--focus line');
-        // .attr('d', avgLine);
+      // appending yAxis to the first chart.
+      focus.append('g')
+          .attr('class', 'y chart__grid')
+          .call(make_y_axis()
+          .tickSize(-width, 0, 0)
+          .tickFormat(''));
 
-    // var priceLine = d3.svg.line()
-    // .interpolate('monotone')
-    // .x(function(d) { return x(d.date); })
-    // .y(function(d) { return y(d.price); });
+      focus.append('g')
+          .attr('class', 'y chart__grid')
+          .call(make_yt_axis()
+          .tickSize(-width, 0, 0)
+          .tickFormat(''));
 
-    var priceChart = focus.append('path')
-        .datum(data)
-        .attr('class', 'chart__line chart__price--focus line')
-        .attr('d', priceLine);
+      var priceChart = focus.append('path')
+          .datum(data)
+          .attr('class', 'chart__line chart__price--focus line')
+          .attr('d', priceLine);
 
-    // var xAxis = d3.svg.axis().scale(x).orient('bottom'),
-    // xAxis2  = d3.svg.axis().scale(x2).orient('bottom'),
-    // yAxis   = d3.svg.axis().scale(y).orient('left');
+      var scoreChart = focus.append('path')
+          .datum(datat)
+          .attr('class', 'chart__line chart__score--focus line')
+          .attr('d', scoreLine);
 
-    focus.append('g')
-        .attr('class', 'x axis')
-        .attr('transform', 'translate(0 ,' + height + ')')
-        .call(xAxis);
+      // var xAxis = d3.svg.axis().scale(x).orient('bottom'),
+      // xAxis2  = d3.svg.axis().scale(x2).orient('bottom'),
+      // yAxis   = d3.svg.axis().scale(y).orient('left');
 
-    focus.append('g')
-        .attr('class', 'y axis')
-        .attr('transform', 'translate(12, 0)')
-        .call(yAxis);
+      focus.append('g')
+          .attr('class', 'x axis')
+          .attr('transform', 'translate(0 ,' + height + ')')
+          .call(xAxis);
 
-    var focusGraph = barsGroup.selectAll('rect')
-        .data(data)
-      .enter().append('rect')
-        .attr('class', 'chart__bars')
-        .attr('x', function(d, i) { return x(new Date(d.date*1000)); })
-        .attr('y', function(d) { return 155 - y3(d.price); })
-        .attr('width', 1)
-        .attr('height', function(d) { return y3(d.price); });
+      focus.append('g')
+          .attr('class', 'x axis')
+          .attr('transform', 'translate(0 ,' + height + ')')
+          .call(xAxist);
 
-    var helper = focus.append('g')
-      .attr('class', 'chart__helper')
-      .style('text-anchor', 'end')
-      .attr('transform', 'translate(' + width + ', 0)');
+      focus.append('g')
+          .attr('class', 'y axis')
+          .attr('transform', 'translate(0, 0)')
+          .call(yAxis);
+      var width1 = width - 6;
+      focus.append('g')
+          .attr('class', 'yt axis')
+          .attr('transform', 'translate(' + width1 + ', 0)')
+          .call(ytAxis);
 
-    var helperText = helper.append('text')
+      var focusGraph = barsGroup.selectAll('rect')
+          .data(data)
+        .enter().append('rect')
+          .attr('class', 'chart__bars')
+          .attr('x', function(d, i) { return x(new Date(d.date*1000)); })
+          .attr('y', function(d) { return 155 - y3(d.price); })
+          .attr('width', 1)
+          .attr('height', function(d) { return y3(d.price); });
 
-    var priceTooltip = focus.append('g')
-      .attr('class', 'chart__tooltip--price')
-      .append('circle')
-      .style('display', 'none')
-      .attr('r', 2.5);
+      var helper = focus.append('g')
+        .attr('class', 'chart__helper')
+        .style('text-anchor', 'end')
+        .attr('transform', 'translate(' + width + ', 0)');
 
-    var averageTooltip = focus.append('g')
-      .attr('class', 'chart__tooltip--average')
-      .append('circle')
-      .style('display', 'none')
-      .attr('r', 2.5);
+      var helperText = helper.append('text')
+      var helperTextt = helper.append('text')
 
-    var mouseArea = svg.append('g')
-      .attr('class', 'chart__mouse')
-      .append('rect')
-      .attr('class', 'chart__overlay')
-      .attr('width', width)
-      .attr('height', height)
-      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-      .on('mouseover', function() {
-        helper.style('display', null);
-        priceTooltip.style('display', null);
-        averageTooltip.style('display', null);
-      })
-      .on('mouseout', function() {
-        helper.style('display', 'none');
-        priceTooltip.style('display', 'none');
-        averageTooltip.style('display', 'none');
-      })
-      .on('mousemove', mousemove);
 
-    context.append('path')
-        .datum(data)
-        .attr('class', 'chart__area area')
-        .attr('d', area2);
+      var priceTooltip = focus.append('g')
+        .attr('class', 'chart__tooltip--price')
+        .append('circle')
+        .style('display', 'none')
+        .attr('r', 2.5);
 
-    context.append('g')
-        .attr('class', 'x axis chart__axis--context')
-        .attr('y', 0)
-        .attr('transform', 'translate(0,' + (height2 - 22) + ')')
-        .call(xAxis2);
+      var scoreTooltip = focus.append('g')
+        .attr('class', 'chart__tooltip--score')
+        .append('circle')
+        .style('display', 'none')
+        .attr('r', 2.5);
 
-    context.append('g')
-        .attr('class', 'x brush')
-        .call(brush)
-      .selectAll('rect')
-        .attr('y', -6)
-        .attr('height', height2 + 7);
+      var averageTooltip = focus.append('g')
+        .attr('class', 'chart__tooltip--average')
+        .append('circle')
+        .style('display', 'none')
+        .attr('r', 2.5);
 
-    function mousemove() {
-      var x0 = x.invert(d3.mouse(this)[0]);
-      var i = bisectDate(data, x0, 1);
-      console.log("coming to mousemove");
-      var d0 = data[i - 1];
-      var d1 = data[i];
-      // console.log("i:", i, "d0:", d0, "d1:", d1);
-      var d = x0 - d0.date > d1.date - x0 ? d1 : d0;
-      helperText.text(legendFormat(new Date(d.date*1000)) + ' - Price: ' + d.price + ' Avg: ' + d.average);
-      priceTooltip.attr('transform', 'translate(' + x(new Date(d.date*1000)) + ',' + y(d.price) + ')');
-      // averageTooltip.attr('transform', 'translate(' + x(new Date(d.date*1000)) + ',' + y(d.average) + ')');
-    }
+      var mouseArea = svg.append('g')
+        .attr('class', 'chart__mouse')
+        .append('rect')
+        .attr('class', 'chart__overlay')
+        .attr('width', width)
+        .attr('height', height)
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+        .on('mouseover', function() {
+          helper.style('display', null);
+          priceTooltip.style('display', null);
+          scoreTooltip.style('display', null);
+        })
+        .on('mouseout', function() {
+          helper.style('display', 'none');
+          priceTooltip.style('display', 'none');
+          scoreTooltip.style('display', 'none');
+        })
+        .on('mousemove', mousemove);
 
-    function brushed() {
-      var ext = brush.extent();
-      console.log("inside brushed:", ext[0]);
-      // console.log("d.date:", (new Date(d.date*1000)), "ext[0]", ext[0] );
-      console.log(max);
-      if (!brush.empty()) {
-        console.log("x.domain", brush.empty() ? x2.domain() : brush.extent());
-        x.domain(brush.empty() ? x2.domain() : brush.extent());
-        // x.domain(brush.empty() ? x2.domain() : brush.extent());
-        console.log("x.domain", brush.empty() ? x2.domain() : brush.extent());
-        y.domain([
-          d3.min(data.map(function(d) { return ((new Date(d.date*1000)) >= ext[0] && (new Date(d.date*1000)) <= ext[1]) ? d.price : max; })) - 0.1,
-          d3.max(data.map(function(d) { return ((new Date(d.date*1000)) >= ext[0] && (new Date(d.date*1000)) <= ext[1]) ? d.price : min; }))
-        ]);
-        // console.log("min1:", min1, "max1:", max1);
+      context.append('path')
+          .datum(data)
+          .attr('class', 'chart__area area')
+          .attr('d', area2);
 
-        range.text(legendFormat(ext[0]) + ' - ' + legendFormat(ext[1]));
-        focusGraph.attr('x', function(d, i) { return x(new Date(d.date*1000)); });
+      context.append('g')
+          .attr('class', 'x axis chart__axis--context')
+          .attr('y', 0)
+          .attr('transform', 'translate(0,' + (height2 - 22) + ')')
+          .call(xAxis2);
 
-        // var days = Math.ceil((ext[1] - ext[0]) / (24 * 3600 * 1000))
-        // focusGraph.attr('width', (40 > days) ? (40 - days) * 5 / 6 : 5)
+      context.append('g')
+          .attr('class', 'x brush')
+          .call(brush)
+        .selectAll('rect')
+          .attr('y', -6)
+          .attr('height', height2 + 7);
+
+      function mousemove() {
+        // need to 
+        var x0 = x.invert(d3.mouse(this)[0]);
+        var i = bisectDate(data, x0, 1);
+        var it = bisectDate(datat, x0, 1);
+        console.log("coming to mousemove");
+        var d0 = data[i - 1];
+        var d1 = data[i];
+
+        var d0t = datat[it - 1];
+        var d1t = datat[it];
+
+        // console.log("i:", i, "d0:", d0, "d1:", d1);
+        var d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+        var dt = x0 - d0.date > d1.date - x0 ? d1t : d0t;
+        helperText.text(legendFormat(new Date(d.date*1000)) + ' - Price: ' + d.price + ' Score: ' + dt.price);
+        priceTooltip.attr('transform', 'translate(' + x(new Date(d.date*1000)) + ',' + y(d.price) + ')');
+
+        scoreTooltip.attr('transform', 'translate(' + x(new Date(dt.date*1000)) + ',' + yt(dt.price) + ')');
+        // averageTooltip.attr('transform', 'translate(' + x(new Date(d.date*1000)) + ',' + y(d.average) + ')');
       }
 
-      priceChart.attr('d', priceLine);
+      function brushed() {
+        var ext = brush.extent();
+        console.log("inside brushed:", ext[0]);
+        // console.log("d.date:", (new Date(d.date*1000)), "ext[0]", ext[0] );
+        console.log(max);
+        if (!brush.empty()) {
+          console.log("x.domain", brush.empty() ? x2.domain() : brush.extent());
+          x.domain(brush.empty() ? x2.domain() : brush.extent());
+          // x.domain(brush.empty() ? x2.domain() : brush.extent());
+          console.log("x.domain", brush.empty() ? x2.domain() : brush.extent());
+          y.domain([
+            d3.min(data.map(function(d) { return ((new Date(d.date*1000)) >= ext[0] && (new Date(d.date*1000)) <= ext[1]) ? d.price : max; })) - 0.1,
+            d3.max(data.map(function(d) { return ((new Date(d.date*1000)) >= ext[0] && (new Date(d.date*1000)) <= ext[1]) ? d.price : min; }))
+          ]);
 
-      console.log("after*******");
-      // averageChart.attr('d', avgLine);
-      focus.select('.x.axis').call(xAxis);
-      focus.select('.y.axis').call(yAxis);
-    }
+          yt.domain([
+            d3.min(datat.map(function(d) { return ((new Date(d.date*1000)) >= ext[0] && (new Date(d.date*1000)) <= ext[1]) ? d.price : maxt; })),
+            d3.max(datat.map(function(d) { return ((new Date(d.date*1000)) >= ext[0] && (new Date(d.date*1000)) <= ext[1]) ? d.price : mint; }))
+          ]);
 
-    var dateRange = ['1d', '1w', '1m', '3m', '6m', '1y', '5y']
-    for (var i = 0, l = dateRange.length; i < l; i ++) {
-      var v = dateRange[i];
-      rangeSelection
-        .append('text')
-        .attr('class', 'chart__range-selection')
-        .text(v)
-        .attr('transform', 'translate(' + (20 * i) + ', 0)')
-        .on('click', function(d) { focusOnRange(this.textContent); });
-    }
+          // console.log("min1:", min1, "max1:", max1);
 
-    function focusOnRange(range) {
-      var today = new Date(data[data.length - 1].date*1000)
-      var ext = new Date(data[data.length - 1].date*1000)
-      console.log("today:", today, "ext:", ext);
-      if (range === '1d')
-        ext.setDate(ext.getDate() - 1)
+          range.text(legendFormat(ext[0]) + ' - ' + legendFormat(ext[1]));
+          focusGraph.attr('x', function(d, i) { return x(new Date(d.date*1000)); });
 
-      if (range === '1m')
-        ext.setMonth(ext.getMonth() - 1)
+          // var days = Math.ceil((ext[1] - ext[0]) / (24 * 3600 * 1000))
+          // focusGraph.attr('width', (40 > days) ? (40 - days) * 5 / 6 : 5)
+        }
 
-      if (range === '1w')
-        ext.setDate(ext.getDate() - 7)
+        priceChart.attr('d', priceLine);
 
-      if (range === '3m')
-        ext.setMonth(ext.getMonth() - 3)
+        scoreChart.attr('d', scoreLine);
 
-      if (range === '6m')
-        ext.setMonth(ext.getMonth() - 6)
+        console.log("after*******");
+        // averageChart.attr('d', avgLine);
+        focus.select('.x.axis').call(xAxis);
+        focus.select('.y.axis').call(yAxis);
 
-      if (range === '1y')
-        ext.setFullYear(ext.getFullYear() - 1)
+        focus.select('.yt.axis').call(ytAxis);
+      }
 
-      if (range === '5y')
-        ext.setFullYear(ext.getFullYear() - 5)
+      var dateRange = ['1d', '1w', '1m', '3m', '6m', '1y', '5y']
+      for (var i = 0, l = dateRange.length; i < l; i ++) {
+        var v = dateRange[i];
+        rangeSelection
+          .append('text')
+          .attr('class', 'chart__range-selection')
+          .text(v)
+          .attr('transform', 'translate(' + (20 * i) + ', 0)')
+          .on('click', function(d) { focusOnRange(this.textContent); });
+      }
 
-      brush.extent([ext, today])
-      brushed()
-      context.select('g.x.brush').call(brush.extent([ext, today]))
-    }
+      function focusOnRange(range) {
+        var today = new Date(data[data.length - 1].date*1000)
+        var ext = new Date(data[data.length - 1].date*1000)
+        console.log("today:", today, "ext:", ext);
+        if (range === '1d')
+          ext.setDate(ext.getDate() - 1)
 
+        if (range === '1m')
+          ext.setMonth(ext.getMonth() - 1)
+
+        if (range === '1w')
+          ext.setDate(ext.getDate() - 7)
+
+        if (range === '3m')
+          ext.setMonth(ext.getMonth() - 3)
+
+        if (range === '6m')
+          ext.setMonth(ext.getMonth() - 6)
+
+        if (range === '1y')
+          ext.setFullYear(ext.getFullYear() - 1)
+
+        if (range === '5y')
+          ext.setFullYear(ext.getFullYear() - 5)
+
+        brush.extent([ext, today])
+        brushed()
+        context.select('g.x.brush').call(brush.extent([ext, today]))
+      }
+    })
   })// end Data
-  // d3.csv('./data/aapl.csv', type, function(err, data) {
-  //   console.log(data);
-
-  //   var brush = d3.svg.brush()
-  //   .x(x2)
-  //   .on('brush', brushed);
-  // })
-  function type(d) {
-    return {
-      date    : parseDate(d.Date),
-      price   : +d.Close,
-      average : +d.Average,
-      volume : +d.Volume,
-    }
-  }
 }());

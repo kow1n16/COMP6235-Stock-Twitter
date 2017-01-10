@@ -33,6 +33,13 @@ svg {
   stroke-width: 2px;
   stroke: #2980b9;
 }
+
+.chart__score--focus {
+  stroke-width: 2px;
+  stroke: #f00;
+  opacity: 0.3;
+}
+
 .chart__average--focus {
   stroke-width: 2px;
   stroke: #f00;
@@ -86,5 +93,16 @@ svg {
   display: none;
 }
 .y.axis path {
+  display: none;
+}
+
+.yt.axis .tick text {
+  text-anchor: start !important;
+  fill: #7f8faf;
+}
+.yt.axis .tick line {
+  display: none;
+}
+.yt.axis path {
   display: none;
 }
