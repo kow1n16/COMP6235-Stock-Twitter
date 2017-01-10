@@ -53,18 +53,6 @@
     .attr('width', width + margin.left + margin.right)
     .attr('height', height + margin.top + margin.bottom + 60);
 
-  // var svg1 = d3.select('body').append('p');
-    // .attr('class', 'chart1')
-    // .attr('width', width + margin.left + margin.right)
-    // .attr('height', height + margin.top + margin.bottom + 60);
-
-  // svg1.append('defs').append('clipPath')
-  //   .attr('id', 'clip')
-  // .append('rect')
-  //   .attr('width', width)
-  //   .attr('height', height);
-  // svg1.append('circle').attr('cy', 25).attr('r', 25);
-
   svg.append('defs').append('clipPath')
     .attr('id', 'clip')
   .append('rect')
@@ -81,7 +69,7 @@
   var make_yt_axis = function () {
     return d3.svg.axis()
       .scale(yt)
-      .orient('right')
+      .orient('left')
       .ticks(3);
   };
 
@@ -120,8 +108,8 @@
     .attr('transform', 'translate(110, 0)');
 
   // read data from file.
-  d3.csv('./data/sbux.csv',function(err, data) {
-    d3.json('http://svm-js1n16-comp6235-temp.ecs.soton.ac.uk:27017/all/sbux_collection', function(err, datat){
+   d3.json('http://svm-js1n16-comp6235-temp.ecs.soton.ac.uk:27017/all/sbux_collection', function(err, datat){
+    d3.csv('./data/sbux.csv',function(err, data){
       // var x = d3.time.scale().range([0, width]),
       // x2  = d3.time.scale().range([0, width]),
       // y   = d3.scale.linear().range([height, 0]),
@@ -133,11 +121,21 @@
         .x(x2)
         .on('brush', brushed);
 
+      for(var i =0; i < datat.length; i ++)
+      {
+        datat[i].date = parseInt(datat[i].date);
+      };
+
       for(var i =0; i < data.length; i ++)
       {
         data[i].date = parseInt(data[i].date);
       };
 
+      // for(var i = 0; i< 10; i++)
+      // {
+      //   console.log(new Date(data[i].date*1000));
+      //   console.log(new Date(datat[i].date*1000));
+      // };
       // console.log("after brush");
       // min and max value.
       // console.log(d.Date);
@@ -169,15 +167,20 @@
         .attr('transform', 'translate(' + width + ', 0)');
 
       // appending yAxis to the first chart.
+      var scoreChart = focus.append('path')
+          .datum(datat)
+          .attr('class', 'chart__line chart__average--focus line')
+          .attr('d', scoreLine);
+          
       focus.append('g')
           .attr('class', 'y chart__grid')
-          .call(make_y_axis()
+          .call(make_yt_axis()
           .tickSize(-width, 0, 0)
           .tickFormat(''));
 
       focus.append('g')
           .attr('class', 'y chart__grid')
-          .call(make_yt_axis()
+          .call(make_y_axis()
           .tickSize(-width, 0, 0)
           .tickFormat(''));
 
@@ -185,11 +188,6 @@
           .datum(data)
           .attr('class', 'chart__line chart__price--focus line')
           .attr('d', priceLine);
-
-      var scoreChart = focus.append('path')
-          .datum(datat)
-          .attr('class', 'chart__line chart__score--focus line')
-          .attr('d', scoreLine);
 
       // var xAxis = d3.svg.axis().scale(x).orient('bottom'),
       // xAxis2  = d3.svg.axis().scale(x2).orient('bottom'),
@@ -201,18 +199,13 @@
           .call(xAxis);
 
       focus.append('g')
-          .attr('class', 'x axis')
-          .attr('transform', 'translate(0 ,' + height + ')')
-          .call(xAxist);
-
-      focus.append('g')
           .attr('class', 'y axis')
           .attr('transform', 'translate(0, 0)')
           .call(yAxis);
       var width1 = width - 6;
       focus.append('g')
           .attr('class', 'yt axis')
-          .attr('transform', 'translate(' + width1 + ', 0)')
+          .attr('transform', 'translate(12, 0)')
           .call(ytAxis);
 
       var focusGraph = barsGroup.selectAll('rect')

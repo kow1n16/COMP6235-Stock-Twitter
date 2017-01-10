@@ -31,15 +31,13 @@ svg {
 }
 .chart__price--focus {
   stroke-width: 2px;
-  stroke: #2980b9;
+  stroke: #f00;
 }
-
 .chart__score--focus {
   stroke-width: 2px;
-  stroke: #f00;
-  opacity: 0.3;
+  stroke: #2980b9;
+  /*opacity: 0.3;*/
 }
-
 .chart__average--focus {
   stroke-width: 2px;
   stroke: #f00;
