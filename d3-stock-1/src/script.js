@@ -63,6 +63,8 @@
   var cheight = 400;
   var svg1 = d3.select('body').append('svg')
       .attr("width", cwidth).attr("height", cheight);
+  var svg2 = d3.select('body').append('svg')
+      .attr("width", cwidth).attr("height", cheight);
 
   var make_y_axis = function () {
     return d3.svg.axis()
@@ -112,6 +114,7 @@
     .attr('class', 'chart__range-selection')
     .attr('transform', 'translate(110, 0)');
   var changedata = [0,0,0];
+  var changedatat = [0,0,0];
   var padding = {top: 20, right: 20, bottom: 20, left: 50};
   var xcAxisWidth = 300; // xaxis's width
   var ycAxisWidth = 300; // yaxis's width
@@ -193,9 +196,30 @@
       changedata[2] = changedata[2]/pricechange.length;
       changedata[2] = changedata[2].toFixed(2);
 
+      for(var i =0; i < pricechange.length; i ++)
+      {
+        if (data[i].score>0)
+          changedatat[0] = changedatat[0]+1;
+        if (data[i].score==0)
+          changedatat[1] = changedatat[1]+1;
+        if (data[i].score<0)
+          changedatat[2] = changedatat[2]+1;
+      };
+      changedatat[0] = changedatat[0]/data.length;
+      changedatat[0] = changedatat[0].toFixed(2);
+      changedatat[1] = changedatat[1]/data.length;
+      changedatat[1] = changedatat[1].toFixed(2);
+      changedatat[2] = changedatat[2]/data.length;
+      changedatat[2] = changedatat[2].toFixed(2);
+
       var barchart = svg1.append("g");
+      var bartchart = svg2.append("g");
+
       var tag1 = new Array();
       tag1 = ['Increased','Unchanged','Decreased'];
+      var tag2 = new Array();
+      tag2 = ['Positive','Neutral','Negative'];
+
       var xctagScale = d3.scale.ordinal()
           .domain(tag1.map(function(d){return d;}))
           .rangeRoundBands([0, xcAxisWidth], 0.6);
@@ -206,6 +230,19 @@
 
         //yaxis plotting scale of change chart
       var ycScale = d3.scale.linear()
+          .domain([0,1])
+          .range([0, ycAxisWidth]);
+
+      var xtctagScale = d3.scale.ordinal()
+          .domain(tag2.map(function(d){return d;}))
+          .rangeRoundBands([0, xcAxisWidth], 0.6);
+        //xaxis plotting scale of change chart
+      var xtcScale = d3.scale.ordinal()
+          .domain(d3.range(changedatat.length))
+          .rangeRoundBands([0, xcAxisWidth], 0.6);
+
+        //yaxis plotting scale of change chart
+      var ytcScale = d3.scale.linear()
           .domain([0,1])
           .range([0, ycAxisWidth]);
 
@@ -222,10 +259,27 @@
             .append("text")
             .call(ctextFun);
 
+        /* rect of change chart */
+      bartchart.selectAll("rect")
+            .data(changedatat)
+            .enter()
+            .append("rect")
+            .call(crectFunt);
+        /* text of change chart*/
+      bartchart.selectAll("text")
+            .data(changedatat)
+            .enter()
+            .append("text")
+            .call(ctextFunt);
+
         /* Adding axes */
       var xcAxis = d3.svg.axis().scale(xctagScale).orient("bottom");
       ycScale.range([ycAxisWidth, 0]);  
       var ycAxis = d3.svg.axis().scale(ycScale).orient("left").tickFormat(d3.format(".0%"));
+
+      var xtcAxis = d3.svg.axis().scale(xtctagScale).orient("bottom");
+      ytcScale.range([ycAxisWidth, 0]);  
+      var ytcAxis = d3.svg.axis().scale(ytcScale).orient("left").tickFormat(d3.format(".0%"));
 
       barchart.append("g").attr("class", "axis")
           .attr("transform", "translate("+ padding.left +","+ (cheight - padding.bottom) +")")
@@ -234,6 +288,14 @@
       barchart.append("g").attr("class", "axis")
           .attr("transform", "translate("+ padding.left +","+ (cheight - padding.bottom - ycAxisWidth) +")")
           .call(ycAxis);
+
+      bartchart.append("g").attr("class", "axis")
+          .attr("transform", "translate("+ padding.left +","+ (cheight - padding.bottom) +")")
+          .call(xtcAxis);
+
+      bartchart.append("g").attr("class", "axis")
+          .attr("transform", "translate("+ padding.left +","+ (cheight - padding.bottom - ycAxisWidth) +")")
+          .call(ytcAxis);
       /* rect Function */
       function crectFun(selection) {
       selection.attr("fill", "steelblue")
@@ -250,15 +312,46 @@
       }
       /* text Function */
       function ctextFun(selection){
-      selection.attr("fill", "white")
+      selection.attr("fill", "black")
             .attr("font-size", "14px").attr("text-anchor", "middle")
             .attr("x", function(d, i){
                 return padding.left + xcScale(i);
             })
             .attr("y", function(d){
-                return cheight - padding.bottom - ycScale(d);
+                return cheight - 2*padding.bottom - ycScale(d);
             })
             .attr("dx", xcScale.rangeBand()/2).attr("dy", "1em")
+            .text(function(d){
+                var strData = parseFloat(d)*100;
+                var ret = strData.toString()+"%";
+                return ret;
+            });
+      }
+      /* rect Function */
+      function crectFunt(selection) {
+      selection.attr("fill", "steelblue")
+            .attr("x", function(d, i){
+                return padding.left + xtcScale(i);
+            })
+            .attr("y", function(d){
+                return cheight - padding.bottom - ytcScale(d);
+            })
+            .attr("width", xcScale.rangeBand())
+            .attr("height", function(d){
+                return ytcScale(d);
+            });
+      }
+      /* text Function */
+      function ctextFunt(selection){
+      selection.attr("fill", "black")
+            .attr("font-size", "14px").attr("text-anchor", "middle")
+            .attr("x", function(d, i){
+                return padding.left + xtcScale(i);
+            })
+            .attr("y", function(d){
+                return cheight - 2*padding.bottom - ytcScale(d);
+            })
+            .attr("dx", xtcScale.rangeBand()/2).attr("dy", "1em")
             .text(function(d){
                 var strData = parseFloat(d)*100;
                 var ret = strData.toString()+"%";
@@ -443,12 +536,19 @@
         };
         var k = 0;
         var pricechange = new Array();
+        var changedatat = [0,0,0];
         for(var i = i; i < data.length; i ++)
         {
           if (data[i].date > timeend)
             break;
           pricechange[k] = data[i].price - data[i].open; 
-          k = k+1;     
+          k = k+1; 
+          if (data[i].score>0)
+            changedatat[0] = changedatat[0]+1;
+          if (data[i].score==0)
+            changedatat[1] = changedatat[1]+1;
+          if (data[i].score<0)
+            changedatat[2] = changedatat[2]+1;    
         };
         var changedata = [0,0,0];
         for(var i =0; i < pricechange.length; i ++)
@@ -467,6 +567,16 @@
         changedata[2] = changedata[2]/pricechange.length;
         changedata[2] = changedata[2].toFixed(2);
 
+
+        changedatat[0] = changedatat[0]/pricechange.length;
+        changedatat[0] = changedatat[0].toFixed(2);
+        changedatat[1] = changedatat[1]/pricechange.length;
+        changedatat[1] = changedatat[1].toFixed(2);
+        changedatat[2] = changedatat[2]/pricechange.length;
+        changedatat[2] = changedatat[2].toFixed(2);
+
+        console.log(changedatat);
+
         priceChart.attr('d', priceLine);
 
         scoreChart.attr('d', scoreLine);
@@ -477,10 +587,12 @@
         focus.select('.y.axis').call(yAxis);
 
         focus.select('.yt.axis').call(ytAxis);
+
         //yaxis plotting scale of change chart
         var ycScale = d3.scale.linear()
             .domain([0,1])
             .range([0,ycAxisWidth]);
+
         /* rect of change chart */
         barchart.selectAll("rect")
             .data(changedata)
@@ -496,13 +608,36 @@
         barchart.selectAll("text")
             .data(changedata)
             .attr("y", function(d){
-                return cheight - padding.bottom - ycScale(d);
+                return cheight - 2*padding.bottom - ycScale(d);
             })
             .attr("dx", xcScale.rangeBand()/2).attr("dy", "1em")
             .text(function(d){
                 var c=d.slice(2,4)+"%"; 
                 return c;
-            });    
+            });  
+
+        /* rect of change chart */
+        bartchart.selectAll("rect")
+            .data(changedatat)
+            .transition()
+            .attr("y", function(d){
+                return cheight - padding.bottom - ytcScale(d);
+            })
+            .attr("width", xtcScale.rangeBand())
+            .attr("height", function(d){
+                return ytcScale(d);
+            });
+        /* text of change chart*/
+        bartchart.selectAll("text")
+            .data(changedatat)
+            .attr("y", function(d){
+                return cheight - 2*padding.bottom - ytcScale(d);
+            })
+            .attr("dx", xtcScale.rangeBand()/2).attr("dy", "1em")
+            .text(function(d){
+                var c=d.slice(2,4)+"%"; 
+                return c;
+            }); 
       }
 
       var dateRange = ['1d', '1w', '1m', '3m', '6m', '1y', '5y']
