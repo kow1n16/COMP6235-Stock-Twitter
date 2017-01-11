@@ -14,7 +14,7 @@ function wordCloud(selector) {
     var fill = d3.scale.category20();
 
     //Construct the word cloud's SVG element
-    var svg = d3.select("#grid-1-4").append("svg")
+    var svg = d3.select("#grid-1-2").append("svg")
         .attr("width", 400)
         .attr("height", 345)
         .append("g")

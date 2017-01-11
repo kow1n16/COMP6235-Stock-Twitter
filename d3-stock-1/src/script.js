@@ -61,9 +61,9 @@
 
   var cwidth = 450;       //svg1 width
   var cheight = 345;
-  var svg1 = d3.select('#grid-1-2').append('svg')
+  var svg1 = d3.select('#grid-1-3').append('svg')
       .attr("width", cwidth).attr("height", cheight);
-  var svg2 = d3.select('#grid-1-3').append('svg')
+  var svg2 = d3.select('#grid-1-4').append('svg')
       .attr("width", cwidth).attr("height", cheight);
 
   var make_y_axis = function () {
