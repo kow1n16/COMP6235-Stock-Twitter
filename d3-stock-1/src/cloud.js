@@ -15,10 +15,10 @@ function wordCloud(selector) {
 
     //Construct the word cloud's SVG element
     var svg = d3.select("#grid-1-4").append("svg")
-        .attr("width", 500)
-        .attr("height", 500)
+        .attr("width", 400)
+        .attr("height", 345)
         .append("g")
-        .attr("transform", "translate(250,250)");
+        .attr("transform", "translate(200,170)");
 
 
     //Draw the word cloud
@@ -38,7 +38,7 @@ function wordCloud(selector) {
         //Entering and existing words
         cloud
             .transition()
-                .duration(600)
+                .duration(700)
                 .style("font-size", function(d) { return d.size + "px"; })
                 .attr("transform", function(d) {
                     return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
