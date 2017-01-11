@@ -592,6 +592,10 @@
         var ycScale = d3.scale.linear()
             .domain([0,1])
             .range([0,ycAxisWidth]);
+        //yaxis plotting scale of change chart
+        var ytcScale = d3.scale.linear()
+            .domain([0,1])
+            .range([0,ycAxisWidth]);
 
         /* rect of change chart */
         barchart.selectAll("rect")
