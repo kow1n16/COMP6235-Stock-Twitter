@@ -9,6 +9,7 @@
   	<link rel="stylesheet" type="text/css" href="../../assets/css/keen-dashboards.css" />
     <script src='http://d3js.org/d3.v3.min.js' charset="utf-8"></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js' charset="utf-8"></script>
+    <script src="https://rawgit.com/jasondavies/d3-cloud/master/build/d3.layout.cloud.js"></script>
 
 	</head>
 	<body class="application">
@@ -84,13 +85,13 @@
           </div>
         </div>
       </div>
-      <div class="col-sm-6 col-md-4">
+      <div class="col-sm-4">
         <div class="chart-wrapper">
           <div class="chart-title">
-            Cell Title
+            Word Cloud
           </div>
-          <div class="chart-stage">
-            <img data-src="holder.js/100%x120/white">
+          <div class="chart-stage" id="grid-1-4">
+            <!--<img data-src="holder.js/100%x120/white">-->
           </div>
           <div class="chart-notes">
             Notes about this chart
@@ -170,6 +171,7 @@
 
   <script type="text/javascript" src="../../assets/lib/keen-js/dist/keen.min.js"></script>
   <script type="text/javascript" src="../../assets/js/meta.js"></script>
-  <script type="text/javascript" src="script.js"></script>script
+  <script type="text/javascript" src="script.js"></script>
+  <script type="text/javascript" src="cloud.js"></script>
 </body>
 </html>
