@@ -120,6 +120,7 @@
   var ycAxisWidth = 300; // yaxis's width
   // read data from file.
    d3.json('http://svm-js1n16-comp6235-temp.ecs.soton.ac.uk:27017/result/sbux_collection', function(err, data){
+      console.log("loaded data");
     // d3.csv('./data/sbux.csv',function(err, data){
       // var x = d3.time.scale().range([0, width]),
       // x2  = d3.time.scale().range([0, width]),
