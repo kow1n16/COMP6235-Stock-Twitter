@@ -575,7 +575,6 @@
         changedatat[2] = changedatat[2]/pricechange.length;
         changedatat[2] = changedatat[2].toFixed(2);
 
-        console.log(changedatat);
 
         priceChart.attr('d', priceLine);
 
@@ -639,8 +638,10 @@
             })
             .attr("dx", xtcScale.rangeBand()/2).attr("dy", "1em")
             .text(function(d){
-                var c=d.slice(2,4)+"%"; 
-                return c;
+                var strData = parseFloat(d)*100;
+                var ret = strData.toString()+"%";
+                console.log(ret);
+                return ret;
             }); 
       }
 
