@@ -59,7 +59,7 @@
     .attr('width', width)
     .attr('height', height);
 
-  var cwidth = 350;       //svg1 width
+  var cwidth = 450;       //svg1 width
   var cheight = 345;
   var svg1 = d3.select('#grid-1-2').append('svg')
       .attr("width", cwidth).attr("height", cheight);
