@@ -48,7 +48,7 @@
     .y0(height2)
     .y1(function(d) { return y2(d.price); });
 
-  var svg = d3.select('body').append('svg')
+  var svg = d3.select('#grid-1-1').append('svg')
     .attr('class', 'chart')
     .attr('width', width + margin.left + margin.right)
     .attr('height', height + margin.top + margin.bottom + 60);
@@ -59,11 +59,11 @@
     .attr('width', width)
     .attr('height', height);
 
-  var cwidth = 400;       //svg1 width
-  var cheight = 400;
-  var svg1 = d3.select('body').append('svg')
+  var cwidth = 350;       //svg1 width
+  var cheight = 345;
+  var svg1 = d3.select('#grid-1-2').append('svg')
       .attr("width", cwidth).attr("height", cheight);
-  var svg2 = d3.select('body').append('svg')
+  var svg2 = d3.select('#grid-1-3').append('svg')
       .attr("width", cwidth).attr("height", cheight);
 
   var make_y_axis = function () {
