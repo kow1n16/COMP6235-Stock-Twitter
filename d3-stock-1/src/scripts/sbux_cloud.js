@@ -5,7 +5,7 @@ d3.csv("./data/sbux_tweets.csv", function(data) {
  data.forEach( function (d) {
         if (d.Hashtages != ""){
             words.push(d.Hashtages)
-            console.log(d.hashtagData);
+            //console.log(d.hashtagData);
         }
     });
 

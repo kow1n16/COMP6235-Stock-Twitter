@@ -59,7 +59,7 @@
     .attr('width', width)
     .attr('height', height);
 
-  
+
   var cwidth = 450;       //svg1 width
   var cheight = 345;
   var svg1 = d3.select('#grid-1-3').append('svg')
@@ -139,6 +139,60 @@
         data[i].date = parseInt(data[i].date);
       };
 
+
+      var average1 = d3.nest()
+      //.key(function(d) {
+        //return d.timestamp; 
+      //})
+      //.sortKeys(d3.ascending)
+      .rollup(function(d){
+        return d3.mean(d, function(g) { 
+          return +g.price;
+        });
+       })
+      .entries(data);
+
+      var average2 = d3.nest()
+      //.key(function(d) {
+        //return d.timestamp; 
+      //})
+      //.sortKeys(d3.ascending)
+      .rollup(function(d){
+        return d3.mean(d, function(g) { 
+          return +g.score;
+        });
+       })
+      .entries(data);
+
+      stock_average =  Math.round(average1* 100) / 100;
+      sentiment_average = Math.round(average2* 100) / 100;
+      
+      var w=400,h=100,
+      svg=d3.select("#grid-1-5")
+      .append("svg")
+      .attr("width",w)
+      .attr("height",h);
+       
+      var text=svg
+      .append("text")
+      .text(stock_average)
+      .attr("y",50)
+      .attr("text-anchor", "start");
+
+      var w=400,h=100,
+      svg=d3.select("#grid-1-6")
+      .append("svg")
+      .attr("width",w)
+      .attr("height",h);
+       
+      var text=svg
+      .append("text")
+      .text(sentiment_average)
+      .attr("y",50)
+      .attr("text-anchor", "start");
+      
+      console.log(stock_average);
+      console.log(sentiment_average);
       // for(var i = 0; i< 10; i++)
       // {
       //   console.log(new Date(data[i].date*1000));

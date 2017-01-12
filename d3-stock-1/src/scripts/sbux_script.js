@@ -120,7 +120,7 @@
   var ycAxisWidth = 300; // yaxis's width
   // read data from file.
    d3.json('http://svm-js1n16-comp6235-temp.ecs.soton.ac.uk:27017/result/sbux_collection', function(err, data){
-      console.log("loaded data");
+      //console.log("loaded data");
     // d3.csv('./data/sbux.csv',function(err, data){
       // var x = d3.time.scale().range([0, width]),
       // x2  = d3.time.scale().range([0, width]),
@@ -138,6 +138,60 @@
         data[i].date = parseInt(data[i].date);
       };
 
+      var average1 = d3.nest()
+      //.key(function(d) {
+        //return d.timestamp; 
+      //})
+      //.sortKeys(d3.ascending)
+      .rollup(function(d){
+        return d3.mean(d, function(g) { 
+          return +g.price;
+        });
+       })
+      .entries(data);
+
+      var average2 = d3.nest()
+      //.key(function(d) {
+        //return d.timestamp; 
+      //})
+      //.sortKeys(d3.ascending)
+      .rollup(function(d){
+        return d3.mean(d, function(g) { 
+          return +g.score;
+        });
+       })
+      .entries(data);
+
+      stock_average =  Math.round(average1* 100) / 100;
+      sentiment_average = Math.round(average2* 100) / 100;
+
+      var w=400,h=100,
+      svg=d3.select("#grid-1-5")
+      .append("svg")
+      .attr("width",w)
+      .attr("height",h);
+       
+      var text=svg
+      .append("text")
+      .text(stock_average)
+      .attr("y",50)
+      .attr("text-anchor", "start");
+
+      var w=400,h=100,
+      svg=d3.select("#grid-1-6")
+      .append("svg")
+      .attr("width",w)
+      .attr("height",h);
+       
+      var text=svg
+      .append("text")
+      .text(sentiment_average)
+      .attr("y",50)
+      .attr("text-anchor", "start");
+      
+      console.log(stock_average);
+      console.log(sentiment_average);
+
       // for(var i = 0; i< 10; i++)
       // {
       //   console.log(new Date(data[i].date*1000));
@@ -151,7 +205,7 @@
       console.log("xRange is:", xRange);
       x.domain(xRange);
       // console.log("x.domain");
-      console.log(d3.extent(data.map(function(d) { return d.price; }))[0]);
+      //console.log(d3.extent(data.map(function(d) { return d.price; }))[0]);
       y.domain([d3.extent(data.map(function(d) { return d.price; }))[0] - 1, d3.extent(data.map(function(d) { return d.price; }))[1]]);
       y3.domain(d3.extent(data.map(function(d) { return d.price; })));
 
