@@ -30,8 +30,8 @@
       </div>
       <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="http://localhost:8000"><mark>Starbucks</mark></a></li>
-          <li><a href="http://localhost:8000/mcd.html">McDonald's</a></li>
+          <li style="background-color: lightsteelblue"><a href="http://localhost:8888">Starbucks</a></li>
+          <li><a href="http://localhost:8888/mcd.html">McDonald's</a></li>
           <!--<li><a href="https://github.com/keenlabs/dashboards/tree/gh-pages/layouts/hero-thirds">Source</a></li>
           <li><a href="https://groups.google.com/forum/#!forum/keen-io-devs">Community</a></li><li><a href="http://stackoverflow.com/questions/tagged/keen-io?sort=newest&pageSize=15">Technical Support</a></li>-->
         </ul>
@@ -48,7 +48,13 @@
           </div>
           <div class="chart-stage">
             <div id="grid-1-1">
-              <!--<img data-src="holder.js/100%x240/white/text:#grid-1-1">-->
+              <div id = "legend" style="float:right;"">
+                Stock
+                <div style="width:70px;height:3px; background-color: red"></div>
+                <br>
+                Sentiment
+                <div style="width:70px;height:3px; background-color: steelblue"></div>
+              </div>
             </div>
           </div>
           <div class="chart-notes">
@@ -59,13 +65,13 @@
       <div class="col-sm-4">
         <div class="chart-wrapper">
           <div class="chart-title">
-            Hashtag Word Cloud
+            High Frequency Word Cloud
           </div>
           <div class="chart-stage" id="grid-1-2">
             <!--img data-src="holder.js/100%x240/white">-->
           </div>
           <div class="chart-notes">
-            Notes about this chart
+            Word Cloud of some high frequency words from tweets about Starbucks
           </div>
         </div>
       </div>
@@ -80,7 +86,7 @@
           <div class="chart-stage" id="grid-1-3">
           </div>
           <div class="chart-notes">
-
+          Percentage change in stock price per time period
           </div>
         </div>
       </div>
@@ -92,20 +98,20 @@
           <div class="chart-stage" id="grid-1-4">
           </div>
           <div class="chart-notes">
-
+            Percentage change in sentiment per time period
           </div>
         </div>
       </div>
       <div class="col-sm-6 col-md-4">
         <div class="chart-wrapper">
           <div class="chart-title">
-            Cell Title
+            Average sentiment value
           </div>
-          <div class="chart-stage">
-            <img data-src="holder.js/100%x120/white">
+          <div class="chart-stage" id="grid-1-5">
+            
           </div>
           <div class="chart-notes">
-            Notes about this chart
+            Average sentiment per time period
           </div>
         </div>
       </div>
@@ -113,13 +119,13 @@
       <div class="col-sm-6 col-md-4">
         <div class="chart-wrapper">
           <div class="chart-title">
-            Cell Title
+             Average stock price
           </div>
-          <div class="chart-stage">
-            <img data-src="holder.js/100%x120/white">
+          <div class="chart-stage" id="grid-1-6">
+            
           </div>
           <div class="chart-notes">
-            Notes about this chart
+            Average stock price per time period
           </div>
         </div>
       </div>
@@ -151,7 +157,7 @@
       </div>-->
     </div>
   </div>
-	<script type="text/javascript" src="script.js"></script>
+	<script type="text/javascript" src="scripts/sbux_script.js"></script>
 
     <hr>
 
@@ -170,6 +176,6 @@
   <script type="text/javascript" src="../../assets/lib/keen-js/dist/keen.min.js"></script>
   <script type="text/javascript" src="../../assets/js/meta.js"></script>
   
-  <script type="text/javascript" src="cloud.js"></script>
+  <script type="text/javascript" src="scripts/sbux_cloud.js"></script>
 </body>
 </html>

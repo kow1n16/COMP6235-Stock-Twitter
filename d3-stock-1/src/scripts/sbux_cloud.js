@@ -1,10 +1,11 @@
+/*based on http://bl.ocks.org/jwhitfieldseed/9697914*/
 var words = [];
 
-d3.csv("./data/sbux_tweets.csv", function(data) {
+d3.json("./data/hashtag0.json", function(data) {
 
  data.forEach( function (d) {
-        if (d.Hashtages != ""){
-            words.push(d.Hashtages)
+        if (d.hashtag != ""){
+            words.push(d.hashtag)
             //console.log(d.hashtagData);
         }
     });

@@ -59,7 +59,6 @@
     .attr('width', width)
     .attr('height', height);
 
-
   var cwidth = 450;       //svg1 width
   var cheight = 345;
   var svg1 = d3.select('#grid-1-3').append('svg')
@@ -107,7 +106,7 @@
   // attach text to legend
   legend.append('text')
     .attr('class', 'chart__symbol')
-    .text('NYSE: Mcdonalds')
+    .text('NYSE: McDonalds')
 
   // interaction part, select time period.
   var rangeSelection =  legend
@@ -120,8 +119,10 @@
   var xcAxisWidth = 300; // xaxis's width
   var ycAxisWidth = 300; // yaxis's width
   // read data from file.
-   d3.json('http://svm-js1n16-comp6235-temp.ecs.soton.ac.uk:27017/result/mcd_collection', function(err, data){
-      console.log("loaded data");
+   d3.json('data/mcd_prices_scores_.json', function(err, data){
+    //http://svm-js1n16-comp6235-temp.ecs.soton.ac.uk:27017/result/mcd_collection
+    
+    //  console.log("loaded data");
     // d3.csv('./data/sbux.csv',function(err, data){
       // var x = d3.time.scale().range([0, width]),
       // x2  = d3.time.scale().range([0, width]),
@@ -138,7 +139,6 @@
       {
         data[i].date = parseInt(data[i].date);
       };
-
 
       var average1 = d3.nest()
       //.key(function(d) {
@@ -166,14 +166,16 @@
 
       stock_average =  Math.round(average1* 100) / 100;
       sentiment_average = Math.round(average2* 100) / 100;
-      
+
+      var svg5; 
+      var svg6;
       var w=400,h=130,
-      svg=d3.select("#grid-1-5")
+      svg5=d3.select("#grid-1-5")
       .append("svg")
       .attr("width",w)
       .attr("height",h);
        
-      var text=svg
+      var text5=svg5
       .append("text")
       .text(sentiment_average)
       .attr("x",140)
@@ -182,20 +184,17 @@
       .attr("text-anchor", "start");
 
       var w=400,h=130,
-      svg=d3.select("#grid-1-6")
+      svg6=d3.select("#grid-1-6")
       .append("svg")
       .attr("width",w)
       .attr("height",h);
        
-      var text=svg
+      var text6=svg6
       .append("text")
       .text(stock_average)
-      .attr("x",100)
+      .attr("x",120)
       .attr("y",90)
       .attr("text-anchor", "start");
-      
-      console.log(stock_average);
-      console.log(sentiment_average);
       // for(var i = 0; i< 10; i++)
       // {
       //   console.log(new Date(data[i].date*1000));
@@ -277,7 +276,7 @@
       var tag1 = new Array();
       tag1 = ['Increased','Unchanged','Decreased'];
       var tag2 = new Array();
-      tag2 = ['Positive','Neutral','Negative'];
+      tag2 = ['Increased','Unchanged','Decreased'];
 
       var xctagScale = d3.scale.ordinal()
           .domain(tag1.map(function(d){return d;}))
@@ -357,7 +356,7 @@
           .call(ytcAxis);
       /* rect Function */
       function crectFun(selection) {
-      selection.attr("fill", "steelblue")
+      selection.attr("fill", "red")
             .attr("x", function(d, i){
                 return padding.left + xcScale(i);
             })
@@ -388,7 +387,7 @@
       }
       /* rect Function */
       function crectFunt(selection) {
-      selection.attr("fill", "red")
+      selection.attr("fill", "steelblue")
             .attr("x", function(d, i){
                 return padding.left + xtcScale(i);
             })
@@ -594,20 +593,23 @@
             break;
         };
         var k = 0;
+        var bruprice = new Array();
+        var bruscore = new Array();
         var pricechange = new Array();
+        var scorechange = new Array();
         var changedatat = [0,0,0];
         for(var i = i; i < data.length; i ++)
         {
           if (data[i].date > timeend)
             break;
-          pricechange[k] = data[i].price - data[i].open; 
-          k = k+1; 
-          if (data[i].score>0)
-            changedatat[0] = changedatat[0]+1;
-          if (data[i].score==0)
-            changedatat[1] = changedatat[1]+1;
-          if (data[i].score<0)
-            changedatat[2] = changedatat[2]+1;    
+          bruprice[i] = data[i].price;
+          bruscore[i] = data[i].score;
+          if (i>=1)
+          {
+            pricechange[k] = data[i].price - data[i].open; 
+            scorechange[k] = data[i].score - data[i-1].score;
+          } 
+          k = k+1;    
         };
         var changedata = [0,0,0];
         for(var i =0; i < pricechange.length; i ++)
@@ -626,6 +628,15 @@
         changedata[2] = changedata[2]/pricechange.length;
         changedata[2] = changedata[2].toFixed(2);
 
+        for(var i =0; i < pricechange.length; i ++)
+        {
+          if (scorechange[i]>0)
+            changedatat[0] = changedatat[0]+1;
+          if (scorechange[i]==0)
+            changedatat[1] = changedatat[1]+1;
+          if (scorechange[i]<0)
+            changedatat[2] = changedatat[2]+1;
+        };
 
         changedatat[0] = changedatat[0]/pricechange.length;
         changedatat[0] = changedatat[0].toFixed(2);
@@ -701,7 +712,37 @@
                 var ret = strData.toString()+"%";
                 console.log(ret);
                 return ret;
-            }); 
+            });
+        var average1 = d3.nest()
+      .rollup(function(d){
+        return d3.mean(d, function(g) { 
+          return +g;
+        });
+       })
+      .entries(bruprice);
+
+      var average2 = d3.nest()
+      .rollup(function(d){
+        return d3.mean(d, function(g) { 
+          return +g;
+        });
+       })
+      .entries(bruscore);
+
+      stock_average =  Math.round(average1* 100) / 100;
+      sentiment_average = Math.round(average2* 100) / 100;
+
+      // var w=400,h=130,
+      //svg=d3.select("#grid-1-5")
+      // .append("svg")
+      // .attr("width",w)
+      // .attr("height",h);
+       
+      svg5.selectAll("text")
+      .text(sentiment_average)
+
+
+      svg6.selectAll('text').text(stock_average); 
       }
 
       var dateRange = ['1d', '1w', '1m', '3m', '6m', '1y', '5y']

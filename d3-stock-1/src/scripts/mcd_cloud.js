@@ -1,14 +1,14 @@
+/*based on http://bl.ocks.org/jwhitfieldseed/9697914*/
 var words = [];
 
-d3.csv("./data/mcd_tweets.csv", function(data) {
+d3.json("./data/hashtag1.json", function(data) {
 
  data.forEach( function (d) {
-        if (d.Hashtages != ""){
-            words.push(d.Hashtages)
-            console.log(d.hashtagData);
+        if (d.hashtag != ""){
+            words.push(d.hashtag)
+            //console.log(d.hashtagData);
         }
     });
-
 function wordCloud(selector) {
 
     var fill = d3.scale.category20();
