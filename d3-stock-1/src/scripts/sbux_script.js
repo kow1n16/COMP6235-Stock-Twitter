@@ -231,9 +231,14 @@
         .attr('transform', 'translate(' + width + ', 0)');
 
       var pricechange = new Array();
+      var scorechange = new Array();
       for(var i = 0; i < data.length; i ++)
         {
-          pricechange[i] = data[i].price - data[i].open; 
+          if (i>=1){
+            scorechange[i] = data[i].score - data[i-1].score;
+            pricechange[i] = data[i].price - data[i].open; 
+          }
+            
           // k = k+1;     
           // if (data[i].date == timeend)
           //   break;
@@ -254,20 +259,20 @@
       changedata[2] = changedata[2]/pricechange.length;
       changedata[2] = changedata[2].toFixed(2);
 
-      for(var i =0; i < pricechange.length; i ++)
+      for(var i =0; i < scorechange.length; i ++)
       {
-        if (data[i].score>0)
+        if (scorechange[i]>0)
           changedatat[0] = changedatat[0]+1;
-        if (data[i].score==0)
+        if (scorechange[i]==0)
           changedatat[1] = changedatat[1]+1;
-        if (data[i].score<0)
+        if (scorechange[i]<0)
           changedatat[2] = changedatat[2]+1;
       };
-      changedatat[0] = changedatat[0]/data.length;
+      changedatat[0] = changedatat[0]/scorechange.length;
       changedatat[0] = changedatat[0].toFixed(2);
-      changedatat[1] = changedatat[1]/data.length;
+      changedatat[1] = changedatat[1]/scorechange.length;
       changedatat[1] = changedatat[1].toFixed(2);
-      changedatat[2] = changedatat[2]/data.length;
+      changedatat[2] = changedatat[2]/scorechange.length;
       changedatat[2] = changedatat[2].toFixed(2);
 
       var barchart = svg1.append("g");
@@ -356,7 +361,7 @@
           .call(ytcAxis);
       /* rect Function */
       function crectFun(selection) {
-      selection.attr("fill", "steelblue")
+      selection.attr("fill", "red")
             .attr("x", function(d, i){
                 return padding.left + xcScale(i);
             })
@@ -387,7 +392,7 @@
       }
       /* rect Function */
       function crectFunt(selection) {
-      selection.attr("fill", "red")
+      selection.attr("fill", "steelblue")
             .attr("x", function(d, i){
                 return padding.left + xtcScale(i);
             })
@@ -594,19 +599,18 @@
         };
         var k = 0;
         var pricechange = new Array();
+        var scorechange = new Array();
         var changedatat = [0,0,0];
         for(var i = i; i < data.length; i ++)
         {
           if (data[i].date > timeend)
             break;
-          pricechange[k] = data[i].price - data[i].open; 
-          k = k+1; 
-          if (data[i].score>0)
-            changedatat[0] = changedatat[0]+1;
-          if (data[i].score==0)
-            changedatat[1] = changedatat[1]+1;
-          if (data[i].score<0)
-            changedatat[2] = changedatat[2]+1;    
+          if (i>=1)
+          {
+            pricechange[k] = data[i].price - data[i].open; 
+            scorechange[k] = data[i].score - data[i-1].score;
+          } 
+          k = k+1;    
         };
 
 
@@ -637,6 +641,15 @@
         changedata[2] = changedata[2]/pricechange.length;
         changedata[2] = changedata[2].toFixed(2);
 
+        for(var i =0; i < scorechange.length; i ++)
+        {
+          if (scorechange[i]>0)
+            changedatat[0] = changedatat[0]+1;
+          if (scorechange[i]==0)
+            changedatat[1] = changedatat[1]+1;
+          if (scorechange[i]<0)
+            changedatat[2] = changedatat[2]+1;
+        };
 
         changedatat[0] = changedatat[0]/pricechange.length;
         changedatat[0] = changedatat[0].toFixed(2);
@@ -708,10 +721,8 @@
             })
             .attr("dx", xtcScale.rangeBand()/2).attr("dy", "1em")
             .text(function(d){
-                var strData = parseFloat(d)*100;
-                var ret = strData.toString()+"%";
-                console.log(ret);
-                return ret;
+                var c=d.slice(2,4)+"%"; 
+                return c;
             }); 
       }
 
