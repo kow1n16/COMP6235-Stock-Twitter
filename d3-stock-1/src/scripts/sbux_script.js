@@ -1,5 +1,5 @@
 /* global d3, _ */
-
+/* Based on Arnaud Drizard visualization*/
 (function() {
 
   var margin = {top: 30, right: 20, bottom: 100, left: 50},

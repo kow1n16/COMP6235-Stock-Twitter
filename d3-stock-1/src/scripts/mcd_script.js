@@ -1,5 +1,5 @@
 /* global d3, _ */
-
+/* Based on Arnaud Drizard visualization*/
 (function() {
 
   var margin = {top: 30, right: 20, bottom: 100, left: 50},
@@ -121,7 +121,7 @@
   // read data from file.
    d3.json('data/mcd_prices_scores_.json', function(err, data){
     //http://svm-js1n16-comp6235-temp.ecs.soton.ac.uk:27017/result/mcd_collection
-    
+
     //  console.log("loaded data");
     // d3.csv('./data/sbux.csv',function(err, data){
       // var x = d3.time.scale().range([0, width]),
@@ -788,3 +788,5 @@
     // })
   })// end Data
 }());
+
+/* Based on Arnaud Drizard stock visualization*/
