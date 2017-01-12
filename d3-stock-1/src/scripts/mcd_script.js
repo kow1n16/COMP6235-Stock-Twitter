@@ -4,7 +4,7 @@
 
   var margin = {top: 30, right: 20, bottom: 100, left: 50},
     margin2  = {top: 210, right: 20, bottom: 20, left: 50},
-    width    = 764 - margin.left - margin.right,
+    width    = 870 - margin.left - margin.right,
     height   = 283 - margin.top - margin.bottom,
     height2  = 283 - margin2.top - margin2.bottom;
 
@@ -59,6 +59,7 @@
     .attr('width', width)
     .attr('height', height);
 
+  
   var cwidth = 450;       //svg1 width
   var cheight = 345;
   var svg1 = d3.select('#grid-1-3').append('svg')
