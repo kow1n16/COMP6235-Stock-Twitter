@@ -109,9 +109,3 @@ svg {
 .yt.axis path {
   display: none;
 }
-#grid-1-5 > svg > text{
-  font-size: 70px;
-}
-#grid-1-6 > svg > text{
-  font-size: 70px;
-}
