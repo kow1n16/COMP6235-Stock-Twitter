@@ -5,13 +5,6 @@
 # ENCLOSED BY '"'
 # LINES TERMINATED BY '\n';
 
-# SELECT id,name,location
-# FROM employees
-# INTO OUTFILE '/var/lib/mysql-files/orders.csv'
-# FIELDS TERMINATED BY ','
-# ENCLOSED BY '"'
-# LINES TERMINATED BY '\n';
-
 import csv
 
 # f = open('sbux_original.csv')

@@ -1,6 +1,6 @@
 var words = [];
 
-d3.csv("./data/sbux_tweets.csv", function(data) {
+d3.csv("./data/mcd_tweets.csv", function(data) {
 
  data.forEach( function (d) {
         if (d.Hashtages != ""){
@@ -41,7 +41,7 @@ function wordCloud(selector) {
                 .duration(700)
                 .style("font-size", function(d) { return d.size + "px"; })
                 .attr("transform", function(d) {
-                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                    return "translate(" + [d.x, d.y] + ")";
                 })
                 .style("fill-opacity", 1);
 
