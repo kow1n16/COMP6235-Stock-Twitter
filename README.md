@@ -13,4 +13,7 @@ Javascript (D3.js)
 ## Locally run
 
 To locally run the project for development purposes, use:
-python -m SimpleHTTPServer [port number] 
+python -m SimpleHTTPServer [port number]
+
+## Live Demo
+svm-ys3n15-comp6235-temp.ecs.soton.ac.uk:5000
