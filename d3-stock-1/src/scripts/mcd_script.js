@@ -106,7 +106,7 @@
   // attach text to legend
   legend.append('text')
     .attr('class', 'chart__symbol')
-    .text('NASDAQ: StarBucks')
+    .text('NYSE: Mcdonalds')
 
   // interaction part, select time period.
   var rangeSelection =  legend
@@ -330,7 +330,7 @@
       }
       /* rect Function */
       function crectFunt(selection) {
-      selection.attr("fill", "steelblue")
+      selection.attr("fill", "red")
             .attr("x", function(d, i){
                 return padding.left + xtcScale(i);
             })

@@ -330,7 +330,7 @@
       }
       /* rect Function */
       function crectFunt(selection) {
-      selection.attr("fill", "steelblue")
+      selection.attr("fill", "red")
             .attr("x", function(d, i){
                 return padding.left + xtcScale(i);
             })
