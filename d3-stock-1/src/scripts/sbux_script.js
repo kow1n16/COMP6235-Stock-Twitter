@@ -165,7 +165,7 @@
       stock_average =  Math.round(average1* 100) / 100;
       sentiment_average = Math.round(average2* 100) / 100;
 
-      var w=400,h=100,
+      var w=400,h=130,
       svg=d3.select("#grid-1-5")
       .append("svg")
       .attr("width",w)
@@ -173,11 +173,13 @@
        
       var text=svg
       .append("text")
-      .text(stock_average)
-      .attr("y",50)
+      .text(sentiment_average)
+      .attr("x",140)
+      .attr("y",90)
+      .style("fill", "green")
       .attr("text-anchor", "start");
 
-      var w=400,h=100,
+      var w=400,h=130,
       svg=d3.select("#grid-1-6")
       .append("svg")
       .attr("width",w)
@@ -185,8 +187,9 @@
        
       var text=svg
       .append("text")
-      .text(sentiment_average)
-      .attr("y",50)
+      .text(stock_average)
+      .attr("x",120)
+      .attr("y",90)
       .attr("text-anchor", "start");
       
       console.log(stock_average);

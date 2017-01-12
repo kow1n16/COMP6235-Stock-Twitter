@@ -109,17 +109,9 @@ svg {
 .yt.axis path {
   display: none;
 }
-div.chart-wrapper{
-  text-align: center;
-}
-div#grid-1-5.chart-stage{
-  text-align: center;
-}
 #grid-1-5 > svg > text{
   font-size: 70px;
-  text-align: center;
 }
 #grid-1-6 > svg > text{
   font-size: 70px;
-  text-align: center;
 }
