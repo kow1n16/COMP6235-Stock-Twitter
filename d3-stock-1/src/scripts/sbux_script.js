@@ -608,6 +608,18 @@
           if (data[i].score<0)
             changedatat[2] = changedatat[2]+1;    
         };
+
+
+        var total
+        for(var i = i; i < data.length; i ++)
+        {
+          if (data[i].date > timeend)
+            total = data[i].price+data[i]+1;
+        }
+        var average = total/data.length;
+        console.log("Average" + average);
+        
+
         var changedata = [0,0,0];
         for(var i =0; i < pricechange.length; i ++)
         {
