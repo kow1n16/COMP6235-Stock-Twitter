@@ -1,3 +1,6 @@
+# Thanks to Mr. Jefferson-Henrique on Github. We used his code to help us to crawl all the tweet.
+# Here is the link to his repository: https://github.com/Jefferson-Henrique/GetOldTweets-python.git
+
 import got
 
 def main():

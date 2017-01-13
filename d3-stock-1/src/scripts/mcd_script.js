@@ -231,9 +231,14 @@
         .attr('transform', 'translate(' + width + ', 0)');
 
       var pricechange = new Array();
+      var scorechange = new Array();
       for(var i = 0; i < data.length; i ++)
         {
-          pricechange[i] = data[i].price - data[i].open; 
+          if (i>=1){
+            scorechange[i] = data[i].score - data[i-1].score;
+            pricechange[i] = data[i].price - data[i].open; 
+          }
+            
           // k = k+1;     
           // if (data[i].date == timeend)
           //   break;
@@ -254,13 +259,13 @@
       changedata[2] = changedata[2]/pricechange.length;
       changedata[2] = changedata[2].toFixed(2);
 
-      for(var i =0; i < pricechange.length; i ++)
+      for(var i =0; i < scorechange.length; i ++)
       {
-        if (data[i].score>0)
+        if (scorechange[i]>0)
           changedatat[0] = changedatat[0]+1;
-        if (data[i].score==0)
+        if (scorechange[i]==0)
           changedatat[1] = changedatat[1]+1;
-        if (data[i].score<0)
+        if (scorechange[i]<0)
           changedatat[2] = changedatat[2]+1;
       };
       changedatat[0] = changedatat[0]/data.length;
